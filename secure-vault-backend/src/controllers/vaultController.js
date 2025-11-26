@@ -4,7 +4,7 @@ const { logEvent } = require('../services/auditService');
 // @desc    Get the user's encrypted vault
 // @route   GET /api/vault
 exports.getVault = async (req, res) => {
-    // console.log("hello");
+  // console.log("hello");
 
   try {
     const { data: vault, error } = await supabase
@@ -33,12 +33,12 @@ exports.updateVault = async (req, res) => {
   const { encryptedBlob } = req.body;
   // console.log(encryptedBlob);
   // console.log("hello");
-  
-  
+
+
   if (typeof encryptedBlob !== 'string') {
-      return res.status(400).json({ message: 'encryptedBlob must be a string.' });
+    return res.status(400).json({ message: 'encryptedBlob must be a string.' });
   }
-  
+
   try {
     const { error } = await supabase
       .from('vaults')

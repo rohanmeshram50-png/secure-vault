@@ -14,21 +14,26 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ background: 'transparent', boxShadow: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
       <Toolbar>
-        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
+        <Typography variant="h5" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'primary.main', fontWeight: 700 }}>
           Secure Vault
         </Typography>
         {auth.isAuthenticated ? (
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
+          <>
+            <Button color="inherit" component={Link} to="/vault" sx={{ mr: 2 }}>
+              My Vault
+            </Button>
+            <Button variant="outlined" color="primary" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
         ) : (
           <>
-            <Button color="inherit" component={Link} to="/login">
+            <Button color="inherit" component={Link} to="/login" sx={{ mr: 2 }}>
               Login
             </Button>
-            <Button color="inherit" component={Link} to="/register">
+            <Button variant="contained" color="primary" component={Link} to="/register">
               Register
             </Button>
           </>
