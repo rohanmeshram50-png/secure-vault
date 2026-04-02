@@ -1,31 +1,26 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const supabase = require('./config/supabase');
-const { generalLimiter } = require('./middleware/rateLimiter');
+require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(express.json()); // Body parser for JSON
-app.use(express.urlencoded({ extended: true }));
-app.set('trust proxy', 1); // Trust first proxy (important for rate limiting behind a proxy)
+// ✅ SIMPLE & SAFE CORS (THIS IS ENOUGH)
+app.use(cors());
 
-// Apply rate limiting
-app.use('/api', generalLimiter);
+// ✅ BODY PARSER
+app.use(express.json());
 
-// API Routes
-app.use('/api', require('./routes'));
+// ✅ ROUTES
+app.use('/api', require('./routes/index'));
 
-// Health check endpoint
+// ✅ TEST ROUTE
 app.get('/', (req, res) => {
-  res.send('Secure Vault API is running...');
+  res.send('API running...');
 });
 
-const PORT = process.env.PORT || 3001;
+// ✅ SERVER START
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-
 });

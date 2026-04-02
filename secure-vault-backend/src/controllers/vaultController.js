@@ -1,57 +1,31 @@
-const supabase = require('../config/supabase');
-const { logEvent } = require('../services/auditService');
+const db = require('../config/db');
 
-// @desc    Get the user's encrypted vault
-// @route   GET /api/vault
-exports.getVault = async (req, res) => {
-  // console.log("hello");
+exports.getVault = (req, res) => {
+  db.query(
+    'SELECT encryptedBlob FROM vaults WHERE userId = ?',
+    [req.user.id],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
 
-  try {
-    const { data: vault, error } = await supabase
-      .from('vaults')
-      .select('encryptedBlob')
-      .eq('userId', req.user.id)
-      .single();
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'Vault not found' });
+      }
 
-    if (error) {
-      throw error;
+      res.json({ encryptedBlob: results[0].encryptedBlob });
     }
-
-    if (!vault) {
-      return res.status(404).json({ message: 'Vault not found' });
-    }
-    await logEvent(req.user.id, 'VAULT_FETCH_SUCCESS', req);
-    res.status(200).json({ encryptedBlob: vault.encryptedBlob });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
+  );
 };
 
-// @desc    Update the user's encrypted vault
-// @route   PUT /api/vault
-exports.updateVault = async (req, res) => {
+exports.updateVault = (req, res) => {
   const { encryptedBlob } = req.body;
-  // console.log(encryptedBlob);
-  // console.log("hello");
 
+  db.query(
+    'UPDATE vaults SET encryptedBlob = ? WHERE userId = ?',
+    [encryptedBlob, req.user.id],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
 
-  if (typeof encryptedBlob !== 'string') {
-    return res.status(400).json({ message: 'encryptedBlob must be a string.' });
-  }
-
-  try {
-    const { error } = await supabase
-      .from('vaults')
-      .update({ encryptedBlob })
-      .eq('userId', req.user.id);
-
-    if (error) {
-      throw error;
+      res.json({ message: 'Vault updated successfully' });
     }
-
-    await logEvent(req.user.id, 'VAULT_UPDATE_SUCCESS', req);
-    res.status(200).json({ message: 'Vault updated successfully.' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
+  );
 };

@@ -1,0 +1,20 @@
+{
+  "name": "secure_vault",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000s\u0000e\u0000c\u0000u\u0000r\u0000e\u0000_\u0000v\u0000a\u0000u\u0000l\u0000t\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql": "^2.18.1",
+    "speakeasy": "^2.0.0"
+  }
+}

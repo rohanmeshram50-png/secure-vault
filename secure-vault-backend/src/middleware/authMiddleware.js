@@ -1,41 +1,28 @@
 const jwt = require('jsonwebtoken');
-const supabase = require('../config/supabase');
+const db = require('../config/db');
 
-const protect = async (req, res, next) => {
+const protect = (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (req.headers.authorization?.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
 
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', decoded.id)
-        .single();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      if (error) {
-        throw error;
+    db.query('SELECT * FROM users WHERE id = ?', [decoded.id], (err, users) => {
+      if (err || users.length === 0) {
+        return res.status(401).json({ message: 'Not authorized' });
       }
 
-      if (!user) {
-        return res.status(401).json({ message: 'Not authorized, user not found' });
-      }
-
-      // Attach user to the request object (excluding sensitive fields)
+      const user = users[0];
       delete user.authKeyHash;
       delete user.mfaSecret;
+
       req.user = user;
-
       next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Not authorized, token failed' });
-    }
-  }
-
-  if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    });
+  } else {
+    res.status(401).json({ message: 'No token' });
   }
 };
 
